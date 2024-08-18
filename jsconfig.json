@@ -1,0 +1,21 @@
+{
+  "compilerOptions": {
+    "jsx": "react",
+    "experimentalDecorators": true,
+    "allowSyntheticDefaultImports": true,
+    "baseUrl": ".",
+    "paths": {
+      "@utils/*": ["./src/app/utils/*"],
+      "@store/*": ["./src/store/*"],
+      "@common/*": ["./src/app/common/*"],
+      "@assets/*": ["./src/app/assets/*"],
+      "@screens/*": ["./src/app/screens/*"],
+      "@navigation/*": ["./src/navigation/*"],
+      "@components/*": ["./src/app/components/*"],
+      "@hooks/*": ["./src/app/hooks/*"],
+      "@constants/*": ["./src/app/constants/*"],
+      "@src/*": ["./src/*"]
+    }
+  },
+  "exclude": ["node_modules"]
+}
