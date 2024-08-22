@@ -14,6 +14,8 @@
       "@components/*": ["./src/app/components/*"],
       "@hooks/*": ["./src/app/hooks/*"],
       "@constants/*": ["./src/app/constants/*"],
+      "@locales": ["./src/app/locales/index.js"],
+      "@configs/*": ["./src/app/configs/*"],
       "@src/*": ["./src/*"]
     }
   },
