@@ -1,4 +1,11 @@
 {
     "121": "hello",
-    "hello2": "xxx"
+    "hello2": "xxx",
+    "Home": "Home",
+    "Class": "Class",
+    "Child": "Child",
+    "Parent": "Parent",
+    "Wage": "Wage",
+    "Fee": "Fee",
+    "Setting": "Setting"
 }
