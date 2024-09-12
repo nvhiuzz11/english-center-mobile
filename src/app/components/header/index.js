@@ -24,7 +24,6 @@ interface HeaderProps {
 
 export const Header: React.FC<HeaderProps> = React.memo(props => {
   const {colors} = useTheme();
-  console.log('colors x', colors);
 
   const {
     title,

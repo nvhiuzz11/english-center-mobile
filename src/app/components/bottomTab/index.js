@@ -28,7 +28,6 @@ if (isAndroid && UIManager.setLayoutAnimationEnabledExperimental) {
 let spam = false;
 export const BottomComponent = props => {
   const {insets, state: routerState, descriptors, navigation} = props;
-  console.log('props BottomComponent', routerState);
   const {colors} = useTheme();
 
   const styles = makeStyles(colors);

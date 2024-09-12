@@ -21,7 +21,7 @@ const persistConfig: PersistConfig = {
   key: 'root',
   storage: AsyncStorage,
   blacklist: [],
-  whitelist: ['account', 'settings'],
+  whitelist: ['account', 'settings', 'app'],
   timeout: null,
   debounce: 100,
 };

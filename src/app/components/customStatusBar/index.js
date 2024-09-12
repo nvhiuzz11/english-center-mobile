@@ -9,7 +9,7 @@ export const CustomStatusBar = props => {
   return isFocused ? (
     <StatusBar
       {...props}
-      barStyle={themeMode === 'light' ? 'light-content' : 'dark-content'}
+      barStyle={themeMode === 'light' ? 'dark-content' : 'light-content'}
     />
   ) : null;
 };

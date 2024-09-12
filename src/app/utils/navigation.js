@@ -26,7 +26,24 @@ export const WelcomeStack = props => {
         animation: 'slide_from_right',
       }}>
       {/* <Stack.Screen name={SCREEN_NAME.HOME} component={REGISTER.HomeScreen} /> */}
+      <Stack.Screen name={SCREEN_NAME.HOME} component={REGISTER.HomeScreen} />
       <Stack.Screen name={SCREEN_NAME.LOGIN} component={REGISTER.LoginScreen} />
+      <Stack.Screen
+        name={SCREEN_NAME.REGISTER_CLASS}
+        component={REGISTER.ResgisterClassScreen}
+      />
+      <Stack.Screen
+        name={SCREEN_NAME.SELECT_ROLE}
+        component={REGISTER.SelectRoleScreen}
+      />
+      <Stack.Screen
+        name={SCREEN_NAME.REGISTER_PROFILE}
+        component={REGISTER.RegisterProfileScreen}
+      />
+      <Stack.Screen
+        name={SCREEN_NAME.REGISTER_ACCOUNT}
+        component={REGISTER.RegisterAccountScreen}
+      />
     </Stack.Navigator>
   );
 };
@@ -40,6 +57,18 @@ export const MainStack = props => {
       }}>
       <Stack.Screen name={SCREEN_NAME.BOTTOM_TAB} component={TabBottom} />
       <Stack.Screen name={SCREEN_NAME.LOGIN} component={REGISTER.LoginScreen} />
+      <Stack.Screen
+        name={SCREEN_NAME.REGISTER_CLASS}
+        component={REGISTER.ResgisterClassScreen}
+      />
+      <Stack.Screen
+        name={SCREEN_NAME.PERSONAL_INFORMATION}
+        component={REGISTER.PersonalInformationScreen}
+      />
+      <Stack.Screen
+        name={SCREEN_NAME.DETAIL_STUDENT_CLASS}
+        component={REGISTER.DetailStudentClassScreen}
+      />
     </Stack.Navigator>
   );
 };
@@ -50,8 +79,7 @@ export const TabBottom = () => {
 
   const {role} = useSelector(state => state.account.accountInfo);
 
-  const [tabs, setTabs] = React.useState([]);
-  console.log('accountInfo', role);
+  // console.log('accountInfo', role);
 
   const renderTabs = React.useCallback(() => {
     if (isStudent(role)) {
@@ -62,6 +90,7 @@ export const TabBottom = () => {
             name={TAB_NAME.CLASS_STUDENT_TAB}
             component={ClassStudentTab}
           />
+          <Tab.Screen name={TAB_NAME.SCHEDULE_TAB} component={ScheduleTab} />
           <Tab.Screen name={TAB_NAME.PARENT_TAB} component={ParentTab} />
         </>
       );
@@ -82,15 +111,12 @@ export const TabBottom = () => {
             name={TAB_NAME.CLASS_TEACHER_TAB}
             component={ClassTeacherTab}
           />
+          <Tab.Screen name={TAB_NAME.SCHEDULE_TAB} component={ScheduleTab} />
           <Tab.Screen name={TAB_NAME.WAGE_TAB} component={WageTab} />
         </>
       );
     }
   }, [role]);
-
-  React.useEffect(() => {
-    setTabs(renderTabs());
-  }, [role, renderTabs]);
 
   return (
     <Tab.Navigator
@@ -109,21 +135,7 @@ export const TabBottom = () => {
       tabBar={props => (
         <BottomComponent {...props} colors={colors} insets={insets} />
       )}>
-      {/* <Tab.Screen name={TAB_NAME.HOME_TAB} component={HomeTab} />
-
-      <Tab.Screen
-        name={TAB_NAME.CLASS_STUDENT_TAB}
-        component={ClassStudentTab}
-      />
-      <Tab.Screen
-        name={TAB_NAME.CLASS_TEACHER_TAB}
-        component={ClassTeacherTab}
-      />
-      <Tab.Screen name={TAB_NAME.PARENT_TAB} component={ParentTab} />
-      <Tab.Screen name={TAB_NAME.CHILD_TAB} component={ChildTab} />
-      <Tab.Screen name={TAB_NAME.FEE_TAB} component={FeeTab} />
-      <Tab.Screen name={TAB_NAME.WAGE_TAB} component={WageTab} /> */}
-      {tabs}
+      {renderTabs()}
       <Tab.Screen name={TAB_NAME.SETTING_TAB} component={SettingTab} />
     </Tab.Navigator>
   );
@@ -143,6 +155,17 @@ const ClassStudentTab = () => {
       <Stack.Screen
         name={SCREEN_NAME.CLASS_STUDENT}
         component={REGISTER.ClassStudentScreen}
+      />
+    </Stack.Navigator>
+  );
+};
+
+const ScheduleTab = () => {
+  return (
+    <Stack.Navigator screenOptions={{headerShown: false}}>
+      <Stack.Screen
+        name={SCREEN_NAME.SCHEDULE}
+        component={REGISTER.ScheduleScreen}
       />
     </Stack.Navigator>
   );

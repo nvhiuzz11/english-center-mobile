@@ -6,8 +6,11 @@ export const CustomLightTheme = {
     ...DefaultTheme.colors,
     BACKGROUND_PRIMARY: '#F9F9F9',
     ICON_TAB_COLOR: '#1F1F1F',
-    ACTIVE_COLOR: '#3fc2ff',
     BOTTOM_TAB: '#FBFBFB',
+    MAIN_HEADER: '#419cdc',
+    BACKGROUND_MODAL: '#b2ebf2',
+    BACKGROUND_MODALIZE: '#F5F5F5',
+
     PRIMARY: {
       50: '#f9f9f9',
       100: '#f3f3f3',
@@ -19,6 +22,8 @@ export const CustomLightTheme = {
       700: '#5b5b5b',
       800: '#3c3c3c',
       900: '#1c1c1c',
+      text: '#0088cc',
+      button: '#ffd95c',
     },
     SECONDARY: {
       50: '#e0f7fa',
@@ -44,6 +49,36 @@ export const CustomLightTheme = {
       800: '#d3d9e7',
       900: '#303645',
     },
+    SEMANTIC: {
+      SUCCESS: {
+        700: '#009535',
+        600: '#00A742',
+        500: '#00B64B',
+        400: '#00C267',
+        50: '#E3F6E9',
+      },
+      INFO: {
+        600: '#1E88E5',
+        500: '#2196F3',
+        400: '#42A5F5',
+        300: '#64B5F6',
+        50: '#E3F2FD',
+      },
+      WARNING: {
+        900: '#F5802F',
+        700: '#FFBF40',
+        600: '#FFD747',
+        500: '#FFE446',
+        50: '#FFFDE8',
+      },
+      ERROR: {
+        700: '#d73847',
+        600: '#E53935',
+        500: '#F44336',
+        400: '#EF5350',
+        50: '#FFEBEE',
+      },
+    },
   },
 };
 
@@ -53,8 +88,10 @@ export const CustomDarkTheme = {
     ...DarkTheme.colors,
     BACKGROUND_PRIMARY: '#0f0f0f',
     ICON_TAB_COLOR: '#F7F7F7',
-    ACTIVE_COLOR: '#3fffd9',
     BOTTOM_TAB: '#070707',
+    MAIN_HEADER: '#061723',
+    BACKGROUND_MODAL: '#00796b',
+    BACKGROUND_MODALIZE: '#2e2d4d',
     PRIMARY: {
       50: '#0f0f0f',
       100: '#2f2f2f',
@@ -66,6 +103,8 @@ export const CustomDarkTheme = {
       700: '#e0e0e0',
       800: '#ededed',
       900: '#f7f7f7',
+      text: '#004466',
+      button: '#cc9c00',
     },
     SECONDARY: {
       50: '#e0f2f1',
@@ -90,6 +129,36 @@ export const CustomDarkTheme = {
       700: '#545d73',
       800: '#444b5d',
       900: '#edeffa',
+    },
+    SEMANTIC: {
+      SUCCESS: {
+        700: '#009535',
+        600: '#00A742',
+        500: '#00B64B',
+        400: '#00C267',
+        50: '#E3F6E9',
+      },
+      INFO: {
+        600: '#1E88E5',
+        500: '#2196F3',
+        400: '#42A5F5',
+        300: '#64B5F6',
+        50: '#E3F2FD',
+      },
+      WARNING: {
+        900: '#F5802F',
+        700: '#FFBF40',
+        600: '#FFD747',
+        500: '#FFE446',
+        50: '#FFFDE8',
+      },
+      ERROR: {
+        700: '#d73847',
+        600: '#E53935',
+        500: '#F44336',
+        400: '#EF5350',
+        50: '#FFEBEE',
+      },
     },
   },
 };
