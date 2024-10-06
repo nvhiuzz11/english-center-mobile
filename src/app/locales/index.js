@@ -6,6 +6,7 @@ import {store} from '@store/index';
 import {setLanguage} from '@store/reducers/setting';
 import dayjs from 'dayjs';
 import {I18n} from 'i18n-js';
+import {useSelector} from 'react-redux';
 
 const i18n = new I18n();
 
@@ -31,12 +32,17 @@ export const setI18nConfig = () => {
     settings: {language},
   } = store.getState();
 
-  const bestAvailableLanguage = RNLocalize?.findBestLanguageTag(
-    Object.keys(translationGetters),
-  );
+  // const language2 = useSelector(state => state?.settings?.language);
 
-  const languageTag =
-    language ?? bestAvailableLanguage?.languageTag ?? fallback.languageTag;
+  // console.log('languag2e', language2);
+
+  // const bestAvailableLanguage = RNLocalize?.findBestLanguageTag(
+  //   Object.keys(translationGetters),
+  // );
+
+  // dispatch(setAccountInfo({accountInfo: {user: 'Hieu', role: 'parent'}}));
+
+  const languageTag = language || fallback.languageTag;
 
   translate.cache.clear();
 

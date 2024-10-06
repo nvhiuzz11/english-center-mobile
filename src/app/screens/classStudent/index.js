@@ -1,6 +1,6 @@
-import React, {useRef} from 'react';
+import React, {useEffect, useRef, useState} from 'react';
 import {Container} from '@components/container';
-import {useNavigation, useTheme} from '@react-navigation/native';
+import {useIsFocused, useNavigation, useTheme} from '@react-navigation/native';
 import {
   View,
   StyleSheet,
@@ -22,6 +22,10 @@ import {translate} from '@locales';
 import {DropDownIcon} from '@assets/icons/dropDownIcon';
 import {ActiveClass} from './components/activeClass';
 import {ClosedClass} from './components/closedClass';
+import {useAuxios} from '@src/app/hook';
+import {CLASS_STATUS} from '@constants/user';
+import {StatusCodes} from 'http-status-codes';
+import {Loading} from '@components/loading';
 
 // const ClosedClass = () => <View style={{flex: 1}} />;
 
@@ -37,6 +41,46 @@ export const ClassStudentScreen = props => {
   const styles = makeStyle(colors);
 
   const [index, setIndex] = React.useState(0);
+
+  const {publicAxios, authAxios} = useAuxios();
+  const isFocused = useIsFocused();
+
+  const [comingClass, setComingClass] = useState([]);
+  const [openingClass, setOpeningClass] = useState([]);
+  const [closedClass, setClosedClass] = useState([]);
+  const [classes, setClasses] = useState([]);
+  const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    if (isFocused) {
+      fetchClasses();
+    }
+  }, [isFocused]);
+
+  const fetchClasses = async () => {
+    try {
+      const response = await authAxios.get('api/my-class');
+      if (response.status === StatusCodes.OK) {
+        console.log('fetchClasses res my class :', response.data);
+        const classesData = response.data;
+        setClasses(classesData);
+
+        setComingClass(
+          classesData.filter(item => item.status === CLASS_STATUS.COMMING),
+        );
+        setOpeningClass(
+          classesData.filter(item => item.status === CLASS_STATUS.OPENING),
+        );
+        setClosedClass(
+          classesData.filter(item => item.status === CLASS_STATUS.CLOSED),
+        );
+      }
+      setIsLoading(false);
+    } catch (error) {
+      setIsLoading(false);
+      console.error('fetchClasses error', error);
+    }
+  };
 
   const renderTabBar = props => {
     return (
@@ -57,11 +101,20 @@ export const ClassStudentScreen = props => {
   };
 
   const renderScene = ({route}) => {
-    return <>{route.key === 'first' ? <ActiveClass /> : <ClosedClass />}</>;
+    return (
+      <>
+        {route.key === 'first' ? (
+          <ActiveClass comingClass={comingClass} openingClass={openingClass} />
+        ) : (
+          <ClosedClass closedClass={closedClass} />
+        )}
+      </>
+    );
   };
 
   return (
     <Container>
+      {isLoading && <Loading />}
       <MainHeader />
       <View style={styles.container}>
         <TabView

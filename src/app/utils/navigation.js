@@ -44,6 +44,11 @@ export const WelcomeStack = props => {
         name={SCREEN_NAME.REGISTER_ACCOUNT}
         component={REGISTER.RegisterAccountScreen}
       />
+      <Stack.Screen
+        name={SCREEN_NAME.CLASS_OF_CENTER}
+        component={REGISTER.ClassOfCenterScreen}
+      />
+      <Stack.Screen name={SCREEN_NAME.MAP} component={REGISTER.MapScreen} />
     </Stack.Navigator>
   );
 };
@@ -69,6 +74,56 @@ export const MainStack = props => {
         name={SCREEN_NAME.DETAIL_STUDENT_CLASS}
         component={REGISTER.DetailStudentClassScreen}
       />
+      <Stack.Screen
+        name={SCREEN_NAME.STUDENT_DETAIL}
+        component={REGISTER.StudentDetailScreen}
+      />
+      <Stack.Screen
+        name={SCREEN_NAME.FEE_DETAIL}
+        component={REGISTER.FeeDetailScreen}
+      />
+      <Stack.Screen
+        name={SCREEN_NAME.WAGE_DETAIL}
+        component={REGISTER.WageDetailScreen}
+      />
+      <Stack.Screen
+        name={SCREEN_NAME.SESSION_CONTENT}
+        component={REGISTER.SessionContentScreen}
+      />
+      <Stack.Screen
+        name={SCREEN_NAME.SESSION_CONTENT_DETAIL}
+        component={REGISTER.SessionContentDetailScreen}
+      />
+      <Stack.Screen
+        name={SCREEN_NAME.CLASS_OF_CENTER}
+        component={REGISTER.ClassOfCenterScreen}
+      />
+      <Stack.Screen
+        name={SCREEN_NAME.DETAIL_TEACHER_CLASS}
+        component={REGISTER.DetailTeacherClassScreen}
+      />
+      <Stack.Screen
+        name={SCREEN_NAME.STUDENT_OF_CLASS}
+        component={REGISTER.StudentOfClassScreen}
+      />
+      <Stack.Screen
+        name={SCREEN_NAME.CONTENT_OF_SESSIONS}
+        component={REGISTER.ContentOfSessionsScreen}
+      />
+      <Stack.Screen
+        name={SCREEN_NAME.ATTENDANCE}
+        component={REGISTER.AttendanceScreen}
+      />
+      <Stack.Screen
+        name={SCREEN_NAME.EVALUATE_SESSION}
+        component={REGISTER.EvaluateSessionScreen}
+      />
+      <Stack.Screen
+        name={SCREEN_NAME.NOTIFICATION}
+        component={REGISTER.NotificationScreen}
+      />
+      <Stack.Screen name={SCREEN_NAME.PAY} component={REGISTER.PayScreen} />
+      <Stack.Screen name={SCREEN_NAME.MAP} component={REGISTER.MapScreen} />
     </Stack.Navigator>
   );
 };

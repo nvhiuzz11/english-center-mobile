@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from 'react';
+import React, {useEffect, useRef, useState} from 'react';
 import {Container} from '@components/container';
 import {useNavigation, useTheme} from '@react-navigation/native';
 import {
@@ -32,6 +32,21 @@ import {EditProfileIcon} from '@assets/icons/editProfileIcon';
 import {EyeIcon} from '@assets/icons/eyeIcon';
 import {EyeOffIcon} from '@assets/icons/eyeOffIcon';
 import {PasswordIcon} from '@assets/icons/passwordIcon';
+import {getAvatar, isParent, isStudent} from '@utils/user';
+import {ROLE} from '@constants/user';
+import {
+  calculateAge,
+  formatDateFromISO,
+  isExactEmail,
+  isExactPhoneNumber,
+  isOnlyWhitespace,
+} from '@utils/input';
+import {useAuth, useAuxios} from '@src/app/hook';
+import {Loading} from '@components/loading';
+import {StatusCodes} from 'http-status-codes';
+import Toast from 'react-native-toast-message';
+import {l} from 'i18n-js';
+import {setCommentRange} from 'typescript';
 
 export const PersonalInformationScreen = props => {
   const navigation = useNavigation();
@@ -40,6 +55,11 @@ export const PersonalInformationScreen = props => {
   const styles = makeStyle(colors);
 
   const isLogin = useSelector(state => state.app.isLogin);
+  const {accountInfo} = useSelector(state => state.account);
+  const {accessToken} = useSelector(state => state.account);
+
+  const {publicAxios, authAxios} = useAuxios();
+  const {saveAccountInfo} = useAuth();
 
   const [isEditInfor, setIsEditInfor] = useState(false);
   const [isEditPassword, setIsEditPassword] = useState(false);
@@ -53,50 +73,326 @@ export const PersonalInformationScreen = props => {
   const [selectedIndex, setSelectedIndex] = useState(new IndexPath(0));
   const selectedValue = dataGender[selectedIndex];
 
-  useEffect(() => {
-    if (selectedIndex != null) {
-      //console.log(selectedIndex.row);
-    }
-  }, [selectedIndex]);
+  const [name, setName] = useState(null);
+  const [address, setAddress] = useState(null);
+  const [phone, setPhone] = useState(null);
+  const [email, setEmail] = useState(null);
 
-  const renderEyeIcon = (props): React.ReactElement => (
-    <TouchableWithoutFeedback
-      onPress={() => {
-        setSecureTextEntry(!secureTextEntry);
-      }}>
-      {secureTextEntry ? <EyeIcon /> : <EyeOffIcon />}
-    </TouchableWithoutFeedback>
-  );
+  const [errName, setErrName] = useState(null);
+  const [errGender, setErrGender] = useState(null);
+  const [errDate, setErrDate] = useState(null);
+  const [errAddress, setErrAddress] = useState(null);
+  const [errPhone, setErrPhone] = useState(null);
+  const [errEmail, setErrEmail] = useState(null);
+
+  const [pass, setPass] = useState(null);
+  const [password, setPassword] = useState(null);
+  const [confirmPassword, setConfirmPassword] = useState(null);
+  const [errPassword, setErrPassword] = useState(null);
+  const [errConfirmPassword, setErrConfirmPassword] = useState(null);
+  const [isLoading, setIsLoading] = useState(false);
+  const newPass = useRef(null);
+
+  useEffect(() => {
+    // console.log(accountInfo.birthday);
+    // setDate(accountInfo.birthday);
+    console.log('accountInfo', accountInfo, accessToken);
+    setIsLoading(true);
+    fectchAccountInfo();
+    //getInfo();
+  }, []);
+
+  const getInfo = () => {
+    setName(accountInfo.name);
+    setAddress(accountInfo.address);
+    setPhone(accountInfo.phone);
+    setEmail(accountInfo.email);
+    setPass(accountInfo.password);
+    if (accountInfo.gender === 1) {
+      setSelectedIndex(new IndexPath(0));
+    } else {
+      setSelectedIndex(new IndexPath(1));
+    }
+    if (accountInfo.birthday) {
+      setDate(new Date(accountInfo.birthday));
+    }
+  };
+
+  const fectchAccountInfo = async () => {
+    try {
+      const res = await authAxios.get('api/auth/me');
+      if (res.status === StatusCodes.OK) {
+        console.log('res data', res.data);
+        const info = res.data;
+
+        setName(info.name);
+        setAddress(info.address);
+        setPhone(info.phone);
+        setEmail(info.email);
+        setPass(accountInfo.password);
+        if (info.gender === 1) {
+          setSelectedIndex(new IndexPath(0));
+        } else {
+          setSelectedIndex(new IndexPath(1));
+        }
+        if (info.birthday) {
+          setDate(new Date(info.birthday));
+        }
+
+        saveAccountInfo({
+          ...res.data,
+          password: newPass.current || accountInfo.password,
+        });
+        newPass.current = null;
+      }
+      setIsLoading(false);
+    } catch (error) {
+      console.log('fectchAccountInfo ~ error', error);
+      setIsLoading(false);
+    }
+  };
 
   const onPressCancel = () => {
+    getInfo();
     setIsEditInfor(false);
   };
 
-  const onPressSave = () => {
-    setIsEditInfor(false);
+  const onPressSave = async () => {
+    setIsLoading(true);
+
+    const isExactData = checkData();
+
+    if (isExactData) {
+      const requestData = {
+        name: name,
+        gender: selectedIndex?.row + 1,
+        birthday: date.toISOString(),
+        age: calculateAge(date),
+        phone: phone || null,
+        email: email || null,
+        address: address,
+      };
+
+      console.log('data', requestData);
+
+      try {
+        const res = await authAxios.put('api/my-user-detail', requestData);
+        if (res.status === StatusCodes.OK) {
+          console.log('res  update data', res.data);
+
+          await fectchAccountInfo();
+          //  getInfo();
+
+          setIsLoading(false);
+          Toast.show({
+            type: 'success',
+            props: {
+              title: translate('Update information successfully'),
+            },
+          });
+
+          setIsEditInfor(false);
+        }
+      } catch (error) {
+        console.log('update ~ error', error);
+        setIsLoading(false);
+
+        Toast.show({
+          type: 'error',
+          props: {
+            title: translate('Update information is fail'),
+          },
+        });
+      }
+
+      setIsLoading(false);
+    }
+    setIsLoading(false);
+  };
+
+  const checkData = () => {
+    let isExactData = true;
+    const validateField = (condition, setError, errorMsg) => {
+      if (condition) {
+        setError(translate(errorMsg));
+        isExactData = false;
+      } else {
+        setError(null);
+      }
+    };
+
+    validateField(
+      !name || isOnlyWhitespace(name),
+      setErrName,
+      'Data cannot be blank',
+    );
+    validateField(
+      selectedIndex?.row === undefined,
+      setErrGender,
+      'Data cannot be blank',
+    );
+    validateField(
+      !address || isOnlyWhitespace(address),
+      setErrAddress,
+      'Data cannot be blank',
+    );
+
+    // Kiểm tra số điện thoại
+
+    if (!isStudent(accountInfo.role)) {
+      validateField(!phone, setErrPhone, 'Data cannot be blank');
+      if (phone) {
+        validateField(
+          phone && !isExactPhoneNumber(phone),
+          setErrPhone,
+          'Phone number is incorrect',
+        );
+      }
+    } else {
+      validateField(
+        phone && !isExactPhoneNumber(phone),
+        setErrPhone,
+        'Phone number is incorrect',
+      );
+    }
+
+    // Kiểm tra email
+    validateField(
+      email && !isExactEmail(email),
+      setErrEmail,
+      'Email is incorrect',
+    );
+
+    return isExactData;
+  };
+
+  const checkPassData = () => {
+    let isExactData = true;
+    const validateField = (condition, setError, errorMsg) => {
+      if (condition) {
+        setError(translate(errorMsg));
+        isExactData = false;
+      } else {
+        setError(null);
+      }
+    };
+
+    validateField(
+      !password || isOnlyWhitespace(password),
+      setErrPassword,
+      'Password cannot be blank',
+    );
+
+    validateField(
+      !confirmPassword || isOnlyWhitespace(confirmPassword),
+      setErrConfirmPassword,
+      'Confirm password cannot be blank',
+    );
+
+    if (
+      password &&
+      !isOnlyWhitespace(password) &&
+      confirmPassword &&
+      !isOnlyWhitespace(confirmPassword)
+    ) {
+      validateField(
+        password !== confirmPassword,
+        setErrConfirmPassword,
+        'Confirm password do not match',
+      );
+
+      validateField(
+        password !== confirmPassword,
+        setErrPassword,
+        'Passwords do not match',
+      );
+
+      if (password === confirmPassword) {
+        validateField(
+          password && password.length < 8,
+          setErrPassword,
+          'Password must be at least 8 characters',
+        );
+        validateField(
+          confirmPassword && confirmPassword.length < 8,
+          setErrConfirmPassword,
+          'Password must be at least 8 characters',
+        );
+      }
+    }
+
+    return isExactData;
   };
 
   const onPressCancelPass = () => {
     setIsEditPassword(false);
+    setPassword(null);
+    setConfirmPassword(null);
   };
 
-  const onPressSavePass = () => {
-    setIsEditPassword(false);
+  const onPressSavePass = async () => {
+    setIsLoading(true);
+    const isExactData = checkPassData();
+
+    if (isExactData) {
+      const requestData = {
+        oldPassword: pass,
+        password: password,
+        confirmPassword: confirmPassword,
+      };
+      console.log('requestData', requestData);
+
+      try {
+        const res = await authAxios.put('api/user-password', requestData);
+        if (res.status === StatusCodes.OK) {
+          console.log('res  update data', res.data);
+          newPass.current = password;
+          setPass(password);
+          fectchAccountInfo();
+          //getInfo();
+
+          setIsLoading(false);
+          Toast.show({
+            type: 'success',
+            props: {
+              title: translate('Update password successfully'),
+            },
+          });
+
+          setIsEditPassword(false);
+        }
+      } catch (error) {
+        console.log('update ~ error', error);
+        setIsLoading(false);
+
+        Toast.show({
+          type: 'error',
+          props: {
+            title: translate('Update password is fail'),
+          },
+        });
+      }
+
+      setPassword(null);
+      setConfirmPassword(null);
+    }
+
+    setIsLoading(false);
   };
 
   return (
     <Container>
-      {/* < MainHeader /> */}
+      {isLoading && <Loading />}
       <Header title={translate('Personal information')} />
       <KeyboardAwareScrollView
         style={styles.container}
         contentContainerStyle={{flexGrow: 1}}
         enableOnAndroid={true}
-        extraScrollHeight={-hp(30)}>
+        extraScrollHeight={hp(30)}>
         <View style={styles.profileContainer}>
           <Avatar
             size="large"
-            source={require('@assets/images/Student-male-avatar.png')}
+            source={getAvatar(accountInfo.role, accountInfo.gender)}
             style={styles.avatar}
           />
           <TouchableOpacity
@@ -108,6 +404,16 @@ export const PersonalInformationScreen = props => {
           </TouchableOpacity>
 
           <View style={styles.inforContainer}>
+            <Text
+              style={{
+                color: colors.text,
+                fontSize: 18,
+                textAlign: 'center',
+                fontWeight: '800',
+                marginBottom: 10,
+              }}>
+              ID: {accountInfo.id}
+            </Text>
             {isEditInfor ? (
               <>
                 <View style={styles.inputContainer}>
@@ -115,7 +421,13 @@ export const PersonalInformationScreen = props => {
                     {translate('Fullname')}
                     <Text style={styles.require}>{' *'}</Text>
                   </Text>
-                  <InputApp style={styles.input} value="Nguyen Van Hieu" />
+                  <InputApp
+                    style={styles.input}
+                    value={name}
+                    onChangeText={setName}
+                    caption={errName && errName}
+                    status={errName ? 'danger' : 'basic'}
+                  />
                 </View>
 
                 <View style={styles.inputContainer}>
@@ -133,7 +445,9 @@ export const PersonalInformationScreen = props => {
                     value={
                       selectedIndex !== null ? dataGender[selectedIndex] : null
                     }
-                    placeholder={translate('Select gender')}>
+                    placeholder={translate('Select gender')}
+                    caption={errGender && errGender}
+                    status={errGender ? 'danger' : 'basic'}>
                     <SelectItem title={translate('Male')} />
                     <SelectItem title={translate('Female')} />
                   </Select>
@@ -145,6 +459,8 @@ export const PersonalInformationScreen = props => {
                   </Text>
                   <Datepicker
                     style={{color: 'black'}}
+                    max={new Date(2055, 0, 1)}
+                    min={new Date(1900, 0, 1)}
                     size="large"
                     date={date}
                     onSelect={nextDate => setDate(nextDate)}
@@ -160,21 +476,43 @@ export const PersonalInformationScreen = props => {
                   <InputApp
                     style={styles.input}
                     labelStyle={styles.label}
-                    value="H11 1212n"
+                    value={address}
+                    onChangeText={setAddress}
+                    caption={errAddress && errAddress}
+                    status={errAddress ? 'danger' : 'basic'}
                   />
                 </View>
                 <View style={styles.inputContainer}>
                   <Text style={styles.label}>
                     {translate('Phone')}
-                    {/* {role === ROLE.PARENT && (
-                  <Text style={styles.require}>{' *'}</Text>
-                )} */}
+                    {accountInfo.role !== ROLE.STUDENT && (
+                      <Text style={styles.require}>{' *'}</Text>
+                    )}
                   </Text>
-                  <InputApp style={styles.input} labelStyle={styles.label} />
+                  <InputApp
+                    style={styles.input}
+                    labelStyle={styles.label}
+                    value={phone}
+                    onChangeText={setPhone}
+                    caption={errPhone && errPhone}
+                    status={errPhone ? 'danger' : 'basic'}
+                  />
                 </View>
                 <View style={styles.inputContainer}>
-                  <Text style={styles.label}>{translate('Email')}</Text>
-                  <InputApp style={styles.input} labelStyle={styles.label} />
+                  <Text style={styles.label}>
+                    {translate('Email')}
+                    {accountInfo.role === ROLE.TEACHER && (
+                      <Text style={styles.require}>{' *'}</Text>
+                    )}
+                  </Text>
+                  <InputApp
+                    style={styles.input}
+                    labelStyle={styles.label}
+                    value={email}
+                    onChangeText={setEmail}
+                    caption={errEmail && errEmail}
+                    status={errEmail ? 'danger' : 'basic'}
+                  />
                 </View>
 
                 <View style={styles.buttonContainer}>
@@ -205,25 +543,36 @@ export const PersonalInformationScreen = props => {
                     {translate('Fullname')}
                     <Text style={styles.require}>{' *'}</Text>
                   </Text>
-                  <InputApp
-                    style={styles.input}
-                    disabled
-                    value="Nguyen Van Hieu"
-                  />
+                  <InputApp style={styles.input} disabled value={name} />
                 </View>
                 <View style={styles.inputContainer}>
                   <Text style={styles.label}>
                     {translate('Gender')}
                     <Text style={styles.require}>{' *'}</Text>
                   </Text>
-                  <InputApp style={styles.input} disabled value="Nam" />
+                  <InputApp
+                    style={styles.input}
+                    disabled
+                    value={
+                      accountInfo.gender === 1
+                        ? translate('Male')
+                        : translate('Female')
+                    }
+                  />
                 </View>
                 <View style={styles.inputContainer}>
                   <Text style={styles.label}>
                     {translate('Date of birth')}
                     <Text style={styles.require}>{' *'}</Text>
                   </Text>
-                  <InputApp style={styles.input} disabled value="11-11-11" />
+                  <InputApp
+                    style={styles.input}
+                    disabled
+                    value={
+                      accountInfo.birthday &&
+                      formatDateFromISO(accountInfo.birthday)
+                    }
+                  />
                 </View>
 
                 <View style={styles.inputContainer}>
@@ -235,28 +584,36 @@ export const PersonalInformationScreen = props => {
                     style={styles.input}
                     labelStyle={styles.label}
                     disabled
-                    value="H11 1212n"
+                    value={address}
                   />
                 </View>
                 <View style={styles.inputContainer}>
                   <Text style={styles.label}>
                     {translate('Phone')}
-                    {/* {role === ROLE.PARENT && (
-                  <Text style={styles.require}>{' *'}</Text>
-                )} */}
+                    {accountInfo.role !== ROLE.STUDENT && (
+                      <Text style={styles.require}>{' *'}</Text>
+                    )}
                   </Text>
                   <InputApp
                     style={styles.input}
                     labelStyle={styles.label}
                     disabled
+                    value={phone}
                   />
                 </View>
                 <View style={styles.inputContainer}>
-                  <Text style={styles.label}>{translate('Email')}</Text>
+                  <Text style={styles.label}>
+                    {translate('Email')}
+                    {accountInfo.role === ROLE.TEACHER && (
+                      <Text style={styles.require}>{' *'}</Text>
+                    )}
+                  </Text>
+
                   <InputApp
                     style={styles.input}
                     labelStyle={styles.label}
                     disabled
+                    value={email}
                   />
                 </View>
               </>
@@ -289,8 +646,10 @@ export const PersonalInformationScreen = props => {
                       {securePass ? <EyeIcon /> : <EyeOffIcon />}
                     </TouchableWithoutFeedback>
                   }
-                  value="123456"
-                  disabled
+                  value={password && password}
+                  onChangeText={setPassword}
+                  caption={errPassword && errPassword}
+                  status={errPassword ? 'danger' : 'basic'}
                 />
               </View>
               <View style={styles.inputContainer}>
@@ -310,8 +669,10 @@ export const PersonalInformationScreen = props => {
                       {setSecureConfirmPass ? <EyeIcon /> : <EyeOffIcon />}
                     </TouchableWithoutFeedback>
                   }
-                  value="123456"
-                  disabled
+                  value={confirmPassword && confirmPassword}
+                  onChangeText={setConfirmPassword}
+                  caption={errConfirmPassword && errConfirmPassword}
+                  status={errConfirmPassword ? 'danger' : 'basic'}
                 />
               </View>
 
@@ -351,7 +712,7 @@ export const PersonalInformationScreen = props => {
                       {secureTextEntry ? <EyeIcon /> : <EyeOffIcon />}
                     </TouchableWithoutFeedback>
                   }
-                  value="123456"
+                  value={pass}
                   disabled
                 />
               </View>
@@ -408,7 +769,7 @@ const makeStyle = colors =>
       backgroundColor: colors.NEUTRAL[800],
     },
     inforContainer: {
-      marginTop: 70,
+      marginTop: 50,
     },
     inputContainer: {
       marginBottom: 10,

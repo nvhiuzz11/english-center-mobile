@@ -32,7 +32,7 @@ export const InputApp: React.FC<InputProps & InputAppProps> = React.forwardRef(
                     styles.textCaption,
                     {color: colors.SEMANTIC.ERROR[500]},
                   ]}>
-                  {caption}
+                  {/* {caption} */}
                 </Text>
               </View>
             );
@@ -44,7 +44,7 @@ export const InputApp: React.FC<InputProps & InputAppProps> = React.forwardRef(
                     styles.textCaption,
                     {color: colors.SEMANTIC.WARNING[500]},
                   ]}>
-                  {caption}
+                  {/* {caption} */}
                 </Text>
               </View>
             );
@@ -57,7 +57,7 @@ export const InputApp: React.FC<InputProps & InputAppProps> = React.forwardRef(
                     styles.textCaption,
                     {color: colors.SEMANTIC.SUCCESS[500]},
                   ]}>
-                  {caption}
+                  {/* {caption} */}
                 </Text>
               </View>
             );
@@ -113,7 +113,7 @@ const makeStyles = colors =>
       paddingVertical: 5,
     },
     textCaption: {
-      fontSize: 14,
+      fontSize: 30,
       lineHeight: 16,
       fontWeight: '500',
     },

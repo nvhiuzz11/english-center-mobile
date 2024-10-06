@@ -8,10 +8,12 @@ import {LoginArrow} from '@assets/svg/loginArrow';
 import {Container} from '@components/container';
 import {Header} from '@components/header';
 import {InputApp} from '@components/input';
+import {Loading} from '@components/loading';
 import {SCREEN_NAME} from '@constants/navigation';
 import {ROLE} from '@constants/user';
 import {translate} from '@locales';
 import {useNavigation, useTheme} from '@react-navigation/native';
+import {useAuxios} from '@src/app/hook';
 import {setAccountInfo} from '@store/reducers/account';
 import {
   CheckBox,
@@ -21,7 +23,9 @@ import {
   Select,
   SelectItem,
 } from '@ui-kitten/components';
+import {isOnlyWhitespace} from '@utils/input';
 import {hp, wp} from '@utils/responsive';
+import {StatusCodes} from 'http-status-codes';
 import React, {useEffect, useState} from 'react';
 import {
   View,
@@ -34,44 +38,147 @@ import {
 } from 'react-native';
 import FastImage from 'react-native-fast-image';
 import {KeyboardAwareScrollView} from 'react-native-keyboard-aware-scroll-view';
+import Toast from 'react-native-toast-message';
 import {useDispatch, useSelector} from 'react-redux';
 
 export const RegisterAccountScreen = props => {
-  // const role = props.route.params.payload;
+  const {data} = props.route.params.payload;
 
   const dispatch = useDispatch();
   const {colors} = useTheme();
   const navigation = useNavigation();
   const styles = makeStyle(colors);
 
-  const language = useSelector(state => state?.settings?.language);
   const themeMode = useSelector(state => state.settings.themeMode);
 
-  const [secureTextEntry, setSecureTextEntry] = useState(true);
-  const [ischecked, setIsChecked] = useState(false);
+  const {publicAxios} = useAuxios();
 
-  const dataGender = ['', translate('Male'), translate('Female')];
-  const [selectedIndex, setSelectedIndex] = useState(null);
-  const selectedValue = dataGender[selectedIndex];
+  const [securePass, setSecurePass] = useState(true);
+  const [secureConfirmPass, setSecureConfirmPass] = useState(true);
+  const [username, setUsername] = useState(null);
+  const [password, setPassword] = useState(null);
+  const [confirmPassword, setConfirmPassword] = useState(null);
 
-  const [date, setDate] = useState(new Date());
+  const [errUsername, setErrUsername] = useState(null);
+  const [errPassword, setErrPassword] = useState(null);
+  const [errConfirmPassword, setErrConfirmPassword] = useState(null);
+  const [isLoading, setIsLoading] = useState(false);
 
   const onPressLogo = () => {
     navigation.navigate(SCREEN_NAME.HOME);
   };
 
-  useEffect(() => {
-    if (selectedIndex != null) {
-      console.log(selectedIndex.row);
-    }
-  }, [selectedIndex]);
+  const onPressContinue = async () => {
+    setIsLoading(true);
+    const isExactData = checkData();
+    if (isExactData) {
+      const requestData = {
+        ...data,
+        userName: username,
+        password: password,
+        confirmPassword: confirmPassword,
+      };
+      const res = await publicAxios.post('api/auth/signup', requestData);
 
-  const onPressContinue = () => {
-    navigation.navigate(SCREEN_NAME.REGISTER_ACCOUNT);
+      console.log('res', res);
+
+      if (res.status === StatusCodes.OK) {
+        Toast.show({
+          type: 'success',
+          props: {
+            title: translate('Register account success'),
+            // subTitle: '21',
+          },
+        });
+
+        setIsLoading(false);
+
+        navigation.navigate(SCREEN_NAME.LOGIN, {
+          payload: {username: username},
+        });
+      } else {
+        Toast.show({
+          type: 'error',
+          props: {
+            title: translate('Username already exists'),
+            // subTitle: '21',
+          },
+        });
+      }
+
+      setIsLoading(false);
+    }
+
+    setIsLoading(false);
+  };
+
+  const checkData = () => {
+    let isExactData = true;
+    const validateField = (condition, setError, errorMsg) => {
+      if (condition) {
+        setError(translate(errorMsg));
+        isExactData = false;
+      } else {
+        setError(null);
+      }
+    };
+
+    validateField(
+      !username || isOnlyWhitespace(username),
+      setErrUsername,
+      'Username cannot be blank',
+    );
+
+    validateField(
+      !password || isOnlyWhitespace(password),
+      setErrPassword,
+      'Password cannot be blank',
+    );
+
+    validateField(
+      !confirmPassword || isOnlyWhitespace(confirmPassword),
+      setErrConfirmPassword,
+      'Confirm password cannot be blank',
+    );
+
+    if (
+      password &&
+      !isOnlyWhitespace(password) &&
+      confirmPassword &&
+      !isOnlyWhitespace(confirmPassword)
+    ) {
+      validateField(
+        password !== confirmPassword,
+        setErrConfirmPassword,
+        'Confirm password do not match',
+      );
+
+      validateField(
+        password !== confirmPassword,
+        setErrPassword,
+        'Passwords do not match',
+      );
+
+      if (password === confirmPassword) {
+        validateField(
+          password && password.length < 8,
+          setErrPassword,
+          'Password must be at least 8 characters',
+        );
+        validateField(
+          confirmPassword && confirmPassword.length < 8,
+          setErrConfirmPassword,
+          'Password must be at least 8 characters',
+        );
+      }
+    }
+
+    return isExactData;
   };
 
   return (
     <Container>
+      {isLoading && <Loading />}
       <Header title={'Register'} />
       <KeyboardAwareScrollView
         style={styles.container}
@@ -84,9 +191,7 @@ export const RegisterAccountScreen = props => {
             themeMode === 'light'
               ? require('@assets/images/light-background.jpg')
               : require('@assets/images/dark-background.jpg')
-          }
-          // source={require('@assets/images/dark-background.jpg')}
-        >
+          }>
           <TouchableOpacity style={styles.logoBackground} onPress={onPressLogo}>
             <FastImage
               source={require('@assets/images/logo.png')}
@@ -95,9 +200,7 @@ export const RegisterAccountScreen = props => {
             />
           </TouchableOpacity>
           <Text style={styles.header}>{translate('Register account')}</Text>
-          {/* <Text style={styles.description}>
-            {translate('Login to Your Account to access the system')}
-          </Text> */}
+
           <View style={styles.formContainer}>
             <View style={styles.inputContainer}>
               <Text style={styles.label}>
@@ -105,9 +208,11 @@ export const RegisterAccountScreen = props => {
                 <Text style={styles.require}>{' *'}</Text>
               </Text>
               <InputApp
-                // label={translate('Username')}
                 style={styles.input}
-                // accessoryLeft={<UserNameIcon />}
+                value={username}
+                onChangeText={setUsername}
+                caption={errUsername && errUsername}
+                status={errUsername ? 'danger' : 'basic'}
               />
             </View>
 
@@ -117,10 +222,21 @@ export const RegisterAccountScreen = props => {
                 <Text style={styles.require}>{' *'}</Text>
               </Text>
               <InputApp
-                // label={translate('Username')}
                 style={styles.input}
                 labelStyle={styles.label}
-                // accessoryLeft={<UserNameIcon />}
+                secureTextEntry={securePass}
+                value={password}
+                onChangeText={setPassword}
+                accessoryRight={
+                  <TouchableWithoutFeedback
+                    onPress={() => {
+                      setSecurePass(!securePass);
+                    }}>
+                    {securePass ? <EyeIcon /> : <EyeOffIcon />}
+                  </TouchableWithoutFeedback>
+                }
+                caption={errPassword && errPassword}
+                status={errPassword ? 'danger' : 'basic'}
               />
             </View>
             <View style={styles.inputContainer}>
@@ -132,7 +248,19 @@ export const RegisterAccountScreen = props => {
                 // label={translate('Username')}
                 style={styles.input}
                 labelStyle={styles.label}
-                // accessoryLeft={<UserNameIcon />}
+                secureTextEntry={secureConfirmPass}
+                value={confirmPassword}
+                onChangeText={setConfirmPassword}
+                accessoryRight={
+                  <TouchableWithoutFeedback
+                    onPress={() => {
+                      setSecureConfirmPass(!secureConfirmPass);
+                    }}>
+                    {setSecureConfirmPass ? <EyeIcon /> : <EyeOffIcon />}
+                  </TouchableWithoutFeedback>
+                }
+                caption={errConfirmPassword && errConfirmPassword}
+                status={errConfirmPassword ? 'danger' : 'basic'}
               />
             </View>
           </View>

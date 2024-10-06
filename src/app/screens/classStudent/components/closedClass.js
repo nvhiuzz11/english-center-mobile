@@ -22,7 +22,11 @@ import {translate} from '@locales';
 import {DropDownIcon} from '@assets/icons/dropDownIcon';
 import {KeyboardAwareScrollView} from 'react-native-keyboard-aware-scroll-view';
 
-export const ClosedClass = () => {
+export const ClosedClass = props => {
+  // console.log('props ClosedClass', props);
+
+  const {closedClass} = props;
+
   const navigation = useNavigation();
   const dispatch = useDispatch();
   const {colors} = useTheme();
@@ -33,15 +37,22 @@ export const ClosedClass = () => {
       <TouchableOpacity
         style={styles.itemContainer}
         onPress={() => {
-          navigation.navigate(SCREEN_NAME.DETAIL_STUDENT_CLASS);
+          navigation.navigate(SCREEN_NAME.DETAIL_STUDENT_CLASS, {
+            payload: {
+              classId: item.id,
+              studentId: accountInfo.student.id,
+              childInfo: [],
+            },
+          });
         }}>
         <View style={styles.rowItem}>
-          <Text style={styles.idItem}>{'E07-L05-2024'}</Text>
-          <Text style={styles.descriptiopnItem}>
-            {translate('Number of sessions')}: 3 {translate('sessions')}
+          <Text style={styles.idItem}>{item?.code}</Text>
+          <Text style={styles.descriptiopn}>
+            {translate('Number of sessions')}: {item?.teachedSession}{' '}
+            {translate('sessions')}
           </Text>
         </View>
-        <Text style={styles.nameItem}>{'Lớp 2 - L01 năm 2024'}</Text>
+        <Text style={styles.nameItem}>{item.name}</Text>
       </TouchableOpacity>
     );
   };
@@ -50,7 +61,7 @@ export const ClosedClass = () => {
   return (
     <View style={styles.container}>
       <Text style={styles.descriptiopn}>
-        {translate('Completed')}: {'3 classes'}
+        {translate('Completed')}: {closedClass.length} {translate('classes')}
       </Text>
 
       <View>
@@ -62,8 +73,9 @@ export const ClosedClass = () => {
               }
             }>
             <FlatList
-              data={[{}, {}, {}, {}, {}, {}, {}, {}, {}]}
+              data={closedClass}
               renderItem={renderItem}
+              keyExtractor={item => item.id}
               showsVerticalScrollIndicator={false}
             />
           </View>

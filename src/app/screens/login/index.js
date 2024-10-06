@@ -7,13 +7,17 @@ import {LoginArrow} from '@assets/svg/loginArrow';
 import {Container} from '@components/container';
 import {Header} from '@components/header';
 import {InputApp} from '@components/input';
+import {Loading} from '@components/loading';
 import {SCREEN_NAME} from '@constants/navigation';
 import {translate} from '@locales';
 import {useNavigation, useTheme} from '@react-navigation/native';
+import {useAuth, useAuxios} from '@src/app/hook';
 import {setAccountInfo} from '@store/reducers/account';
 import {CheckBox, Icon} from '@ui-kitten/components';
+import {isOnlyWhitespace} from '@utils/input';
 import {hp, wp} from '@utils/responsive';
-import React, {useState} from 'react';
+import {StatusCodes} from 'http-status-codes';
+import React, {useEffect, useState} from 'react';
 import {
   View,
   Text,
@@ -24,9 +28,12 @@ import {
 } from 'react-native';
 import FastImage from 'react-native-fast-image';
 import {KeyboardAwareScrollView} from 'react-native-keyboard-aware-scroll-view';
+import Toast from 'react-native-toast-message';
 import {useDispatch, useSelector} from 'react-redux';
 
 export const LoginScreen = props => {
+  const payload = props?.route?.params?.payload;
+
   const dispatch = useDispatch();
   const {colors} = useTheme();
   const navigation = useNavigation();
@@ -34,11 +41,22 @@ export const LoginScreen = props => {
 
   const language = useSelector(state => state?.settings?.language);
   const themeMode = useSelector(state => state.settings.themeMode);
+  const account = useSelector(state => state.account);
 
-  dispatch(setAccountInfo({accountInfo: {user: 'Hieu', role: 'parent'}}));
+  const {publicAxios, authAxios} = useAuxios();
+
+  const {saveAccountInfo, saveAuthSate, setIsLogedIn} = useAuth();
 
   const [secureTextEntry, setSecureTextEntry] = useState(true);
   const [ischecked, setIsChecked] = useState(false);
+
+  const [username, setUsername] = useState(
+    payload?.username ? payload?.username : null,
+  );
+  const [password, setPassword] = useState(null);
+  const [errUsername, setErrUsername] = useState(null);
+  const [errPassword, setErrPassword] = useState(null);
+  const [isLoading, setIsLoading] = useState(false);
 
   const toggleSecureEntry = () => {
     setSecureTextEntry(!secureTextEntry);
@@ -58,9 +76,99 @@ export const LoginScreen = props => {
     navigation.navigate(SCREEN_NAME.SELECT_ROLE);
   };
 
+  const getAccountInfo = async () => {
+    console.log('account', account);
+
+    try {
+      const res = await authAxios.get('api/auth/me');
+      if (res.status === StatusCodes.OK) {
+        console.log('res sta', res.status);
+
+        console.log('res data', res.data);
+        saveAccountInfo({...res.data, password: password});
+      }
+    } catch (error) {
+      console.log('getAccountInfo ~ error', error);
+      setIsLoading(false);
+    }
+  };
+
+  const onPressLogin = async () => {
+    setIsLoading(true);
+    const isExactData = checkData();
+
+    const requestData = {
+      userName: username,
+      password: password,
+    };
+
+    if (isExactData) {
+      console.log(username, password);
+
+      try {
+        const res = await publicAxios.post('api/auth/login', requestData);
+        if (res.status === StatusCodes.OK) {
+          console.log('res sta', res.status);
+          console.log('res data', res.data);
+          saveAuthSate(res.data.accessToken, res.data.refreshToken);
+          await getAccountInfo();
+          await setIsLogedIn();
+          setIsLoading(false);
+          Toast.show({
+            type: 'success',
+            props: {
+              title: translate('Log in successfully'),
+            },
+          });
+        }
+      } catch (error) {
+        console.log('login ~ error', error);
+        setIsLoading(false);
+
+        Toast.show({
+          type: 'error',
+          props: {
+            title: translate('Login information is incorrects'),
+          },
+        });
+      }
+    }
+
+    setIsLoading(false);
+  };
+
+  const checkData = () => {
+    let isExactData = true;
+
+    console.log(username, password);
+    const validateField = (condition, setError, errorMsg) => {
+      if (condition) {
+        setError(translate(errorMsg));
+        isExactData = false;
+      } else {
+        setError(null);
+      }
+    };
+
+    validateField(
+      !username || isOnlyWhitespace(username),
+      setErrUsername,
+      'Username cannot be blank',
+    );
+
+    validateField(
+      !password || isOnlyWhitespace(password),
+      setErrPassword,
+      'Password cannot be blank',
+    );
+
+    return isExactData;
+  };
+
   return (
     <Container>
       {/* <Header title={'Login a'} /> */}
+      {isLoading && <Loading />}
       <KeyboardAwareScrollView
         style={{flex: 1}}
         contentContainerStyle={{flexGrow: 1}}
@@ -87,24 +195,30 @@ export const LoginScreen = props => {
           <View style={{marginTop: 15}}>
             <Text style={styles.label}>{translate('Username')}</Text>
             <InputApp
-              // label={translate('Username')}
               style={styles.input}
               labelStyle={styles.label}
               accessoryLeft={<UserNameIcon />}
+              value={username}
+              onChangeText={setUsername}
+              caption={errUsername && errUsername}
+              status={errUsername ? 'danger' : 'basic'}
             />
 
             <Text style={styles.label}>{translate('Password')}</Text>
             <InputApp
-              // label={translate('Password')}
               style={styles.input}
               labelStyle={styles.label}
               accessoryLeft={<PasswordIcon />}
               secureTextEntry={secureTextEntry}
               accessoryRight={renderIcon}
+              value={password}
+              onChangeText={setPassword}
+              caption={errPassword && errPassword}
+              status={errPassword ? 'danger' : 'basic'}
             />
 
             <View style={styles.checkBoxContainer}>
-              <CheckBox
+              {/* <CheckBox
                 checked={ischecked}
                 onChange={state => {
                   setIsChecked(state);
@@ -112,10 +226,10 @@ export const LoginScreen = props => {
               />
               <Text style={[styles.text, {marginLeft: 10, fontSize: 14}]}>
                 {translate('Remember me')}
-              </Text>
+              </Text> */}
             </View>
           </View>
-          <TouchableOpacity style={styles.loginButton}>
+          <TouchableOpacity style={styles.loginButton} onPress={onPressLogin}>
             <View></View>
             <Text style={styles.titleLogin}>{translate('Login')}</Text>
             <LoginArrow />

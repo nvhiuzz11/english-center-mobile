@@ -5,9 +5,12 @@ import {useDispatch} from 'react-redux';
 import FastImage from 'react-native-fast-image';
 import {translate} from '@locales';
 import {wp} from '@utils/responsive';
+import {formatDateFromISO, formatMoney} from '@utils/input';
 
 export const CourseItem = props => {
   const {courseData, onPressCource} = props;
+
+  const program = courseData.program;
 
   const navigation = useNavigation();
   const dispatch = useDispatch();
@@ -21,51 +24,65 @@ export const CourseItem = props => {
       onPress={() => {
         onPressCource(courseData);
       }}>
-      <View style={styles.leftItemContainer}>
-        <FastImage
-          source={require('@assets/images/defaultClassImage.png')}
-          style={styles.image}
-          resizeMode="stretch"
-        />
-        <Text style={[styles.description, {fontWeight: '500'}]}>
-          {translate('Class ID')}: {'L03-02-2023'}
-        </Text>
-        <Text style={[styles.description, {fontWeight: '500', fontSize: 12}]}>
-          {translate('Center')} {'A'}
-        </Text>
-      </View>
-      <View style={styles.rightItemContainer}>
-        <Text style={styles.header}>{'Lớp tiếng anh L03'}</Text>
-        <View style={styles.row}>
-          <Text style={styles.title}>{translate('Teacher')}:</Text>
-          <Text style={styles.description}>{'Nguyễn Văn A'}</Text>
-        </View>
-        <View style={styles.row}>
-          <Text style={styles.title}>
-            {translate('Total number of sessions')}:
+      <View style={{flexDirection: 'row'}}>
+        <View style={styles.leftItemContainer}>
+          <FastImage
+            source={require('@assets/images/defaultClassImage.png')}
+            style={styles.image}
+            resizeMode="stretch"
+          />
+          <Text style={[styles.description, {fontWeight: '500'}]}>
+            {translate('Class ID')}: {courseData.code}
+          </Text>
+          <Text style={[styles.description, {fontWeight: '500', fontSize: 12}]}>
+            {translate('Center')} {courseData.centerId}
           </Text>
         </View>
-        <Text style={styles.description}>{'20 buổi'}</Text>
-        <View style={styles.row}>
-          <Text style={styles.title}>{translate('Course start time')}:</Text>
-          <Text style={styles.description}>{'2-3-2024'}</Text>
+        <View style={styles.rightItemContainer}>
+          <Text style={styles.header}>{courseData.name}</Text>
+          <View style={styles.row}>
+            <Text style={styles.title}>{translate('Teacher')}:</Text>
+          </View>
+          <Text style={styles.description}>{courseData.teachers[0]?.name}</Text>
+          <View style={styles.row}>
+            <Text style={styles.title}>
+              {translate('Total number of sessions')}:
+            </Text>
+            <Text style={styles.description}>{courseData.totalSession}</Text>
+          </View>
+          <View style={styles.row}>
+            <Text style={styles.title}>{translate('Time')}:</Text>
+            <Text style={styles.description}>
+              {formatDateFromISO(courseData.startAt)}
+            </Text>
+          </View>
+          <View style={styles.row}>
+            <Text style={styles.title}>{translate('Tuition fee')}:</Text>
+            <Text style={styles.description}>
+              {formatMoney(courseData.fee)}/{translate('sessions')}
+            </Text>
+          </View>
+          {program && (
+            <>
+              <View style={styles.row}>
+                <Text style={styles.title}>{translate('Promotion')}:</Text>
+                <Text style={styles.description}>
+                  {program.reducePercent} {'%'}
+                </Text>
+              </View>
+              <Text
+                style={{
+                  fontStyle: 'italic',
+                  color: colors.SEMANTIC.WARNING[700],
+                  fontSize: 14,
+                }}>
+                {translate('From')} {formatDateFromISO(program.startAt)}
+                {'\n'}
+                {translate('To')} {formatDateFromISO(program.endAt)}
+              </Text>
+            </>
+          )}
         </View>
-        <View style={styles.row}>
-          <Text style={styles.title}>{translate('Tuition fee')}:</Text>
-          <Text style={styles.description}>{'200.000đ'}</Text>
-        </View>
-        <View style={styles.row}>
-          <Text style={styles.title}>{translate('Promotion')}:</Text>
-          <Text style={styles.description}>{'20%'}</Text>
-        </View>
-        <Text
-          style={{
-            fontStyle: 'italic',
-            color: '#d9b607',
-            fontSize: 13,
-          }}>
-          {'(Từ ngày 12-1-2024 đến 22-2-2024)'}
-        </Text>
       </View>
     </TouchableOpacity>
   );
@@ -86,8 +103,7 @@ const makeStyle = colors =>
       borderRightColor: colors.border,
       borderLeftColor: colors.border,
       borderWidth: 2,
-      flexDirection: 'row',
-      marginVertical: 5,
+      flex: 1,
     },
     leftItemContainer: {
       justifyContent: 'center',
@@ -95,9 +111,12 @@ const makeStyle = colors =>
     },
     rightItemContainer: {
       marginLeft: 20,
+      flex: 2,
+      alignItems: 'flex-start',
+      justifyContent: 'center',
     },
     image: {
-      height: 150,
+      height: 120,
       width: 120,
       borderRadius: 20,
       marginBottom: 5,
@@ -106,6 +125,8 @@ const makeStyle = colors =>
       color: colors.text,
       fontSize: 20,
       fontWeight: '700',
+      textAlign: 'center',
+      marginBottom: 5,
     },
     row: {
       flexDirection: 'row',
@@ -119,5 +140,6 @@ const makeStyle = colors =>
       color: colors.text,
       marginLeft: 5,
       fontSize: 14,
+      fontWeight: '400',
     },
   });

@@ -20,6 +20,7 @@ import {ParentTabIcon} from '@assets/icons/parentTabIcon';
 import {WageTabIcon} from '@assets/icons/wageTabIcon';
 import {FeeTabIcon} from '@assets/icons/feeTabIcon';
 import {SettingTabIcon} from '@assets/icons/settingTabIcon';
+import {ScheduleTabIcon} from '@assets/icons/scheduleTabIcon';
 
 if (isAndroid && UIManager.setLayoutAnimationEnabledExperimental) {
   UIManager.setLayoutAnimationEnabledExperimental(true);
@@ -75,6 +76,12 @@ export const BottomComponent = props => {
             {translate('Class')}
           </Text>
         );
+      case TAB_NAME.SCHEDULE_TAB:
+        return (
+          <Text style={{...styles.title, color: color}}>
+            {translate('Schedule')}
+          </Text>
+        );
       case TAB_NAME.CHILD_TAB:
         return (
           <Text style={{...styles.title, color: color}}>
@@ -118,6 +125,8 @@ export const BottomComponent = props => {
         return <ClassTabIcon color={color} />;
       case TAB_NAME.CLASS_TEACHER_TAB:
         return <ClassTabIcon color={color} />;
+      case TAB_NAME.SCHEDULE_TAB:
+        return <ScheduleTabIcon color={color} />;
       case TAB_NAME.CHILD_TAB:
         return <ChildTabIcon color={color} />;
       case TAB_NAME.PARENT_TAB:

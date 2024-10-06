@@ -4,6 +4,8 @@ import {LogoutIcon} from '@assets/icons/logoutIcon';
 import {NotificationlIcon} from '@assets/icons/notificationIcon';
 import {PersonalIcon} from '@assets/icons/pesonalIcon';
 import {ThemeIcon} from '@assets/icons/themeIcon';
+import {translate} from '@locales';
+import {PayScreen} from '@screens/pay';
 import React from 'react';
 import {register} from 'react-native-bundle-splitter';
 
@@ -25,6 +27,20 @@ export const SCREEN_NAME = {
   PERSONAL_INFORMATION: 'PersonalInformationScreen',
   DETAIL_STUDENT_CLASS: 'DetailStudentClassScreen',
   SCHEDULE: 'ScheduleScreen',
+  STUDENT_DETAIL: 'StudentDetailScreen',
+  FEE_DETAIL: 'FeeDetailScreen',
+  WAGE_DETAIL: 'WageDetailScreen',
+  SESSION_CONTENT: 'SessionContentScreen',
+  SESSION_CONTENT_DETAIL: 'SessionContentDetailScreen',
+  CLASS_OF_CENTER: 'ClassOfCenterScreen',
+  DETAIL_TEACHER_CLASS: 'DetailTeacherClassScreen',
+  STUDENT_OF_CLASS: 'StudentOfClassScreen',
+  CONTENT_OF_SESSIONS: 'ContentOfSessionsScreen',
+  ATTENDANCE: 'AttendanceScreen',
+  EVALUATE_SESSION: 'EvaluateSessionScreen',
+  NOTIFICATION: 'NotificationScreen',
+  PAY: 'PayScreen',
+  MAP: 'MapScreen',
 };
 
 export const SCREEN_STACK = {
@@ -125,11 +141,91 @@ export const REGISTER = {
     extract: SCREEN_NAME.DETAIL_STUDENT_CLASS,
     name: SCREEN_NAME.DETAIL_STUDENT_CLASS,
   }),
+  StudentDetailScreen: register({
+    loader: () => import('@screens/studentDetail'),
+    extract: SCREEN_NAME.STUDENT_DETAIL,
+    name: SCREEN_NAME.STUDENT_DETAIL,
+  }),
+  FeeDetailScreen: register({
+    loader: () => import('@screens/feeDetail'),
+    extract: SCREEN_NAME.FEE_DETAIL,
+    name: SCREEN_NAME.FEE_DETAIL,
+  }),
+  WageDetailScreen: register({
+    loader: () => import('@screens/wageDetail'),
+    extract: SCREEN_NAME.WAGE_DETAIL,
+    name: SCREEN_NAME.WAGE_DETAIL,
+  }),
+  SessionContentScreen: register({
+    loader: () => import('@screens/sessionContent'),
+    extract: SCREEN_NAME.SESSION_CONTENT,
+    name: SCREEN_NAME.SESSION_CONTENT,
+  }),
+  SessionContentDetailScreen: register({
+    loader: () => import('@screens/sessionContentDetail'),
+    extract: SCREEN_NAME.SESSION_CONTENT_DETAIL,
+    name: SCREEN_NAME.SESSION_CONTENT_DETAIL,
+  }),
+  ClassOfCenterScreen: register({
+    loader: () => import('@screens/classOfCenter'),
+    extract: SCREEN_NAME.CLASS_OF_CENTER,
+    name: SCREEN_NAME.CLASS_OF_CENTER,
+  }),
+  DetailTeacherClassScreen: register({
+    loader: () => import('@screens/detailTeacherClass'),
+    extract: SCREEN_NAME.DETAIL_TEACHER_CLASS,
+    name: SCREEN_NAME.DETAIL_TEACHER_CLASS,
+  }),
+  StudentOfClassScreen: register({
+    loader: () => import('@screens/studentOfClass'),
+    extract: SCREEN_NAME.STUDENT_OF_CLASS,
+    name: SCREEN_NAME.STUDENT_OF_CLASS,
+  }),
+  ContentOfSessionsScreen: register({
+    loader: () => import('@screens/contentOfSeesions'),
+    extract: SCREEN_NAME.CONTENT_OF_SESSIONS,
+    name: SCREEN_NAME.CONTENT_OF_SESSIONS,
+  }),
+  AttendanceScreen: register({
+    loader: () => import('@screens/attendance'),
+    extract: SCREEN_NAME.ATTENDANCE,
+    name: SCREEN_NAME.ATTENDANCE,
+  }),
+  EvaluateSessionScreen: register({
+    loader: () => import('@screens/evaluate'),
+    extract: SCREEN_NAME.EVALUATE_SESSION,
+    name: SCREEN_NAME.EVALUATE_SESSION,
+  }),
+  NotificationScreen: register({
+    loader: () => import('@screens/notification'),
+    extract: SCREEN_NAME.NOTIFICATION,
+    name: SCREEN_NAME.NOTIFICATION,
+  }),
+  PayScreen: register({
+    loader: () => import('@screens/pay'),
+    extract: SCREEN_NAME.PAY,
+    name: SCREEN_NAME.PAY,
+  }),
+  MapScreen: register({
+    loader: () => import('@screens/map'),
+    extract: SCREEN_NAME.MAP,
+    name: SCREEN_NAME.MAP,
+  }),
 };
 
 export const ROUTES_STUDENT_CLASS = [
-  {key: 'first', title: 'Active Class'},
-  {key: 'second', title: 'Closed Class'},
+  {key: 'first', title: translate('Active Class')},
+  {key: 'second', title: translate('Closed Class')},
+];
+
+export const ROUTES_STUDENT_CLASS_OF_PARENT = [
+  {key: 'first', title: translate('Personal information')},
+  {key: 'second', title: translate('Class')},
+];
+
+export const ROUTES_CONTENT_OF_SEESION = [
+  {key: 'first', title: translate('Attendance')},
+  {key: 'second', title: translate('Evaluate the session')},
 ];
 
 export const LIST_SETTINGS = [
@@ -155,12 +251,12 @@ export const LIST_SETTINGS = [
     label: 'Dark mode',
     type: 'theme',
   },
-  {
-    icon: <ChangeAccountlIcon />,
-    label: 'Change Account',
-    type: 'touchable',
-    action: 'CA',
-  },
+  // {
+  //   icon: <ChangeAccountlIcon />,
+  //   label: 'Change Account',
+  //   type: 'touchable',
+  //   action: 'CA',
+  // },
   {
     icon: <LogoutIcon />,
     label: 'Logout',

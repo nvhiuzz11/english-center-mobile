@@ -7,7 +7,7 @@ import {useDispatch, useSelector} from 'react-redux';
 import {CustomDarkTheme, CustomLightTheme} from '@configs/theme';
 import {setAccountInfo} from '@store/reducers/account';
 import {setLanguage, setThemeMode} from '@store/reducers/setting';
-import {changeLanguage} from '@locales';
+import {changeLanguage, setI18nConfig} from '@locales';
 import {setIsLogin} from '@store/reducers/app';
 
 export const Navigation = props => {
@@ -27,6 +27,12 @@ export const Navigation = props => {
   // dispatch(setIsLogin({isLogin: 'false'}));
   // changeLanguage('vi');
 
+  React.useEffect(() => {
+    setI18nConfig();
+  }, []);
+
+  // console.log(isLogin);
+
   return (
     <NavigationContainer theme={theme}>
       <Host>
@@ -35,7 +41,7 @@ export const Navigation = props => {
             headerShown: false,
             animation: 'slide_from_right',
           }}>
-          {isLogin ? (
+          {isLogin === true ? (
             <Stack.Screen name={SCREEN_STACK.MAINSTACK} component={MainStack} />
           ) : (
             <Stack.Screen

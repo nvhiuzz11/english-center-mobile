@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {useState} from 'react';
 import {Container} from '@components/container';
 import {LIST_SETTINGS, SCREEN_NAME} from '@constants/navigation';
 import {changeLanguage, translate} from '@locales';
@@ -24,6 +24,8 @@ import {MainHeader} from '@components/mainHeader';
 import {hp, wp} from '@utils/responsive';
 import {ENFlag} from '@assets/svg/enFlag';
 import {VNFlag} from '@assets/svg/vnFlag';
+import {useAuth} from '@src/app/hook';
+import {Loading} from '@components/loading';
 
 export const SettingScreen = props => {
   const navigation = useNavigation();
@@ -38,6 +40,9 @@ export const SettingScreen = props => {
   // const la = language === 'en' ? 'vi' : 'en';
 
   // console.log('l ', LIST_SETTINGS);
+
+  const {logout} = useAuth();
+  const [isLoading, setIsLoading] = useState(false);
 
   const {isSubscribedNotification, themeMode, language} = useSelector(
     state => state.settings,
@@ -58,7 +63,11 @@ export const SettingScreen = props => {
   };
 
   const onPressChangeAccount = () => {};
-  const onPressLogout = () => {};
+  const onPressLogout = async () => {
+    setIsLoading(true);
+    await logout();
+    setIsLoading(false);
+  };
 
   const onNavigate = item => {
     switch (item.action) {
@@ -136,7 +145,7 @@ export const SettingScreen = props => {
   return (
     <Container>
       {/* <Header title={'Hoome a'} /> */}
-
+      {isLoading && <Loading />}
       <MainHeader />
       <View style={styles.container}>
         <FlatList

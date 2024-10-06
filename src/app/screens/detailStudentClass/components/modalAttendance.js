@@ -9,17 +9,21 @@ import {CloseIcon} from '@assets/icons/closeIcon';
 import {LoginIcon} from '@assets/icons/loginIcon';
 import {NoIcon} from '@assets/icons/noIcon';
 import {YesIcon} from '@assets/icons/yesIcon';
+import {formatDateFromISO} from '@utils/input';
 
 export const ModalAttendance = props => {
-  const {isVisible, onClose} = props;
+  const {isVisible, onClose, attendOfStudent} = props;
   const {colors} = useTheme();
   const styles = makeStyle(colors);
 
   const renderItem = ({item, index}) => (
     <View style={styles.item}>
-      <Text style={styles.title}>{'1-2-3222'}</Text>
-      <NoIcon style={{marginRight: 5}} />
-      {/* <YesIcon /> */}
+      <Text style={styles.title}>{formatDateFromISO(item.date)}</Text>
+      {item.attend ? (
+        <YesIcon style={{marginRight: 10}} />
+      ) : (
+        <NoIcon style={{marginRight: 10}} />
+      )}
     </View>
   );
 
@@ -32,78 +36,35 @@ export const ModalAttendance = props => {
         <TouchableOpacity style={styles.closeBtn} onPress={onClose}>
           <CloseIcon />
         </TouchableOpacity>
-        <Text style={styles.header}>{'Attendance Detail'}</Text>
-        <View style={styles.item}>
+        <Text style={styles.header}>{translate('Attendance Detail')}</Text>
+
+        {attendOfStudent?.length > 0 ? (
+          <>
+            <View style={styles.item}>
+              <Text
+                style={{
+                  fontSize: 17,
+                  fontWeight: '700',
+                  color: colors.PRIMARY[900],
+                  marginLeft: 10,
+                }}>
+                {translate('Date')}
+              </Text>
+            </View>
+            <FlatList data={attendOfStudent} renderItem={renderItem} />
+          </>
+        ) : (
           <Text
             style={{
               fontSize: 17,
-              fontWeight: '700',
+              fontWeight: '500',
               color: colors.PRIMARY[900],
               marginLeft: 5,
+              fontStyle: 'italic',
             }}>
-            {'Date'}
+            {translate('There is no attendance data yet')}
           </Text>
-        </View>
-        <FlatList
-          data={[
-            {},
-            {},
-            {},
-            {},
-            {},
-            {},
-            {},
-            {},
-            {},
-            {},
-            {},
-            {},
-            {},
-            {},
-            {},
-            {},
-            ,
-            {},
-            {},
-            {},
-            ,
-            {},
-            {},
-            {},
-            ,
-            {},
-            {},
-            {},
-            ,
-            {},
-            {},
-            {},
-            {},
-            {},
-            {},
-            ,
-            {},
-            {},
-            {},
-            {},
-            {},
-            {},
-            {},
-            {},
-            {},
-            ,
-            {},
-            {},
-            {},
-            {},
-            {},
-            {},
-            {},
-            {},
-            {},
-          ]}
-          renderItem={renderItem}
-        />
+        )}
       </Layout>
     </Modal>
   );
@@ -146,7 +107,7 @@ const makeStyle = colors =>
     title: {
       fontSize: 15,
       fontWeight: '500',
-      marginLeft: 5,
+      marginLeft: 10,
       color: colors.text,
     },
   });

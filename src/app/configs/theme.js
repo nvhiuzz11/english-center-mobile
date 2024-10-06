@@ -79,6 +79,11 @@ export const CustomLightTheme = {
         50: '#FFEBEE',
       },
     },
+    INVOICE_STATUS: {
+      PENDING: '#ff9393',
+      DONE: '#90ee90',
+      DEBT: '#bcbdff',
+    },
   },
 };
 
@@ -107,16 +112,16 @@ export const CustomDarkTheme = {
       button: '#cc9c00',
     },
     SECONDARY: {
-      50: '#e0f2f1',
-      100: '#b2dfdb',
-      200: '#80cbc4',
-      300: '#4db6ac',
-      400: '#26a69a',
-      500: '#009688',
-      600: '#00897b',
-      700: '#00796b',
-      800: '#00695c',
-      900: '#004d40',
+      900: '#e0f2f1',
+      800: '#b2dfdb',
+      700: '#80cbc4',
+      600: '#4db6ac',
+      500: '#26a69a',
+      400: '#009688',
+      300: '#00897b',
+      200: '#00796b',
+      100: '#00695c',
+      50: '#004d40',
     },
     NEUTRAL: {
       50: '#303645',
@@ -159,6 +164,11 @@ export const CustomDarkTheme = {
         400: '#EF5350',
         50: '#FFEBEE',
       },
+    },
+    INVOICE_STATUS: {
+      PENDING: '#ff9393',
+      DONE: '#90ee90',
+      DEBT: '#bcbdff',
     },
   },
 };

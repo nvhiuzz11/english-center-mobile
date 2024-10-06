@@ -1,51 +1,83 @@
-import React, {useState} from 'react';
+import React, {useEffect, useState, useMemo} from 'react';
 import {View, StyleSheet, FlatList, Text, TouchableOpacity} from 'react-native';
 import {useNavigation, useTheme} from '@react-navigation/native';
-import {useDispatch} from 'react-redux';
+import {useDispatch, useSelector} from 'react-redux';
 import {translate} from '@locales';
 import {DropDownIcon} from '@assets/icons/dropDownIcon';
 import {wp} from '@utils/responsive';
 import {SCREEN_NAME} from '@constants/navigation';
+import {formatDateFromISO} from '@utils/input';
+import {CLASS_STATUS} from '@constants/user';
 
-export const ActiveClass = () => {
+export const ActiveClass = props => {
+  const {comingClass, openingClass} = props;
+
   const navigation = useNavigation();
   const dispatch = useDispatch();
   const {colors} = useTheme();
   const styles = makeStyle(colors);
 
+  const {accountInfo} = useSelector(state => state.account);
+
   const [showCommingClass, setShowCommingClass] = useState(false);
   const [showOpeningClass, setShowOpeningClass] = useState(true);
 
-  const renderItem = ({item, index}) => (
+  const toggleComingClass = () => {
+    setShowCommingClass(!showCommingClass);
+  };
+
+  const toggleOpeningClass = () => {
+    setShowOpeningClass(!showOpeningClass);
+  };
+
+  const dataClass = useMemo(
+    () => [
+      {
+        data: comingClass,
+        key: 'upcoming',
+        title: translate('Classes coming soon'),
+        show: showCommingClass,
+        onPress: toggleComingClass,
+      },
+      {
+        data: openingClass,
+        key: 'ongoing',
+        title: translate('Classes is going on'),
+        show: showOpeningClass,
+        onPress: toggleOpeningClass,
+      },
+    ],
+    [comingClass, openingClass, showCommingClass, showOpeningClass],
+  );
+
+  const renderItem = ({item}) => (
     <TouchableOpacity
       style={styles.itemContainer}
       onPress={() => {
-        navigation.navigate(SCREEN_NAME.DETAIL_STUDENT_CLASS);
+        navigation.navigate(SCREEN_NAME.DETAIL_STUDENT_CLASS, {
+          payload: {
+            classId: item.id,
+            studentId: accountInfo.student.id,
+            childInfo: [],
+          },
+        });
       }}>
       <View style={styles.rowItem}>
-        <Text style={styles.idItem}>{'E07-L05-2024'}</Text>
-        <Text style={styles.descriptionItem}>
-          {translate('Time')}: 3-12-2022
-        </Text>
+        <Text style={styles.idItem}>{item?.code}</Text>
+        {item.status === CLASS_STATUS.COMMING ? (
+          <Text style={styles.descriptionItem}>
+            {translate('Time')}: {formatDateFromISO(item.startAt)}
+          </Text>
+        ) : (
+          <Text style={styles.descriptionItem}>
+            {translate('Number of sessions')}: {item?.teachedSession}{' '}
+            {translate('sessions')}
+          </Text>
+        )}
       </View>
-      <Text style={styles.nameItem}>{'Lớp 2 - L01 năm 2024'}</Text>
+      <Text style={styles.nameItem}>{item.name}</Text>
     </TouchableOpacity>
   );
-
-  const data = [
-    {
-      key: 'upcoming',
-      title: translate('Classes coming soon'),
-      show: showCommingClass,
-      onPress: () => setShowCommingClass(!showCommingClass),
-    },
-    {
-      key: 'ongoing',
-      title: translate('Classes is going on'),
-      show: showOpeningClass,
-      onPress: () => setShowOpeningClass(!showOpeningClass),
-    },
-  ];
 
   const renderList = ({item}) => (
     <View style={{marginTop: 10}}>
@@ -58,8 +90,9 @@ export const ActiveClass = () => {
       </TouchableOpacity>
       {item.show && (
         <FlatList
-          data={[{}, {}, {}, {}, {}, {}, {}, {}, {}]}
+          data={item.data}
           renderItem={renderItem}
+          keyExtractor={item => item.id.toString()}
           showsVerticalScrollIndicator={false}
         />
       )}
@@ -69,11 +102,12 @@ export const ActiveClass = () => {
   return (
     <View style={{flex: 1, marginTop: 10}}>
       <Text style={styles.description}>
-        {translate('Currently participating')}: {'3 classes'}
+        {translate('Currently participating')}:{' '}
+        {comingClass.length + openingClass.length} {translate('classes')}
       </Text>
       <FlatList
         style={styles.container}
-        data={data}
+        data={dataClass}
         renderItem={renderList}
         keyExtractor={item => item.key}
         showsVerticalScrollIndicator={false}

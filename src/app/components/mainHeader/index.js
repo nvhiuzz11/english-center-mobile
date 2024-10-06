@@ -1,7 +1,7 @@
 import React, {Component} from 'react';
 import {Text, TopNavigation, Divider, Avatar} from '@ui-kitten/components';
 import {StyleSheet, TouchableOpacity, View} from 'react-native';
-import {wp} from '@utils/index';
+import {getAvatar, wp} from '@utils/index';
 import PropTypes from 'prop-types';
 import {useNavigation, useTheme} from '@react-navigation/native';
 import {TextStyleProp} from 'react-native/Libraries/StyleSheet/StyleSheet';
@@ -11,6 +11,7 @@ import FastImage from 'react-native-fast-image';
 import LinearGradient from 'react-native-linear-gradient';
 import {translate} from '@locales';
 import {SCREEN_NAME} from '@constants/navigation';
+import {NotifcationHeaderIcon} from '@assets/icons/notifcationHeaderIcon';
 
 interface HeaderProps {
   title: String;
@@ -33,6 +34,8 @@ export const MainHeader = React.memo(props => {
   const styles = makeStyles(colors);
 
   const isLogin = useSelector(state => state.app.isLogin);
+  const {accountInfo} = useSelector(state => state.account);
+
   const renderDefaultLeftAction = () => {
     const onPress = () => {
       navigation?.canGoBack() && navigation?.goBack();
@@ -67,8 +70,15 @@ export const MainHeader = React.memo(props => {
   const renderAccessoryRight = () => {
     return (
       <>
-        {isLogin ? (
-          <View>
+        {isLogin === true ? (
+          <View style={{flexDirection: 'row', alignItems: 'center'}}>
+            <TouchableOpacity
+              style={{marginRight: 10}}
+              onPress={() => {
+                navigation.navigate(SCREEN_NAME.NOTIFICATION);
+              }}>
+              <NotifcationHeaderIcon />
+            </TouchableOpacity>
             <TouchableOpacity
               style={styles.avatarContainer}
               onPress={() => {
@@ -76,7 +86,7 @@ export const MainHeader = React.memo(props => {
               }}>
               <Avatar
                 size="medium"
-                source={require('@assets/images/Student-male-avatar.png')}
+                source={getAvatar(accountInfo.role, accountInfo.gender)}
                 style={styles.avatar}
               />
             </TouchableOpacity>
