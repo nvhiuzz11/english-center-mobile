@@ -131,6 +131,7 @@ const makeStyle = colors =>
       fontSize: 15,
       borderBottomWidth: 1,
       borderBottomColor: colors.PRIMARY[400],
+      color: colors.text,
     },
     row: {
       flexDirection: 'row',
@@ -155,9 +156,11 @@ const makeStyle = colors =>
       flex: 1,
       fontWeight: 'bold',
       textAlign: 'center',
+      color: colors.text,
     },
     cell: {
       flex: 1,
       textAlign: 'center',
+      color: colors.text,
     },
   });

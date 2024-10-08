@@ -181,7 +181,7 @@
 
     "Enter the id as a number": "Nhập id định dạng số",
     "Send request successfully": "Gửi yêu cầu thành công",
-    "The request already exists or the parent id is wrong": "Yêu cầu đã tồn tại hoặc mã phụ huynh đã tồn tại",
+    "The request already exists or the parent id is wrong": "Yêu cầu đã tồn tại hoặc mã phụ huynh không đúng",
     "Added associated parent successfully": "Thêm phụ huynh liên kết thành công",
     "Add parent link failed": "Thêm phụ huynh liên kết thất bại",
     "Delete request successfully": "Xóa liên kết thành công",
@@ -197,6 +197,7 @@
     "Update password successfully": "Cập nhật mật khẩu thành công",
     "Update password is fail": "Cập nhật mật khẩu thất bại",
     "Total number of class participants": "Tổng số lớp tham gia",
+    "The request already exists or the student id is wrong": "Yêu cầu đã tồn tại hoặc mã học sinh không đúng",
 
     "Unsubscribe": "Hủy đăng ký",
     "Unsubscribe successfully": "Hủy đăng ký thành công",

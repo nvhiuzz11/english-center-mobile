@@ -77,29 +77,39 @@ export const PayScreen = props => {
     console.log('Received data:', data);
     setIsWebVisible(false);
 
-    try {
-      const res = await authAxios.post('api/payment-success', {
-        costId: costDetail.id,
-        createdByUserId: accountInfo.id,
-        totalMoney: formatAmount(data.amount),
-      });
+    if (data?.responseCode === '00') {
+      try {
+        const res = await authAxios.post('api/payment-success', {
+          costId: costDetail.id,
+          createdByUserId: accountInfo.id,
+          totalMoney: formatAmount(data.amount),
+        });
 
-      if (res.status === StatusCodes.OK) {
+        if (res.status === StatusCodes.OK) {
+          setTimeout(() => {
+            setIsLoading(false);
+            Toast.show({
+              type: 'success',
+              props: {
+                title: translate('Payment successful'),
+              },
+            });
+          }, 1500);
+        }
+      } catch (error) {
         setTimeout(() => {
           setIsLoading(false);
+          Toast.show({
+            type: 'error',
+            props: {
+              title: translate('Payment failed'),
+            },
+          });
         }, 1500);
-        Toast.show({
-          type: 'success',
-          props: {
-            title: translate('Payment successful'),
-          },
-        });
+        console.log('onCreat ~ error', error);
       }
-    } catch (error) {
-      setTimeout(() => {
-        setIsLoading(false);
-      }, 1500);
-      console.log('onCreat ~ error', error);
+    } else {
+      setIsLoading(false);
       Toast.show({
         type: 'error',
         props: {
@@ -125,7 +135,7 @@ export const PayScreen = props => {
           style={{flex: 1}}
           ref={webviewRef}
           source={{
-            uri: 'https://englishcenter.dvdung.fun/vnpay_php/vnpay_pay.php',
+            uri: 'https://englishcenter.giaysinhvien.shop/vnpay_php/vnpay_pay.php',
           }}
           onLoadEnd={sendData}
           onMessage={handleMessage}

@@ -272,7 +272,7 @@ export const DetailStudentClassScreen = props => {
                 },
               ]}>
               <Text style={styles.title}>{translate('Class schedule')}: </Text>
-              <View style={{marginLeft: 50}}>
+              <View style={{marginLeft: 10}}>
                 {classInfo.schedules.map((schedule, index) => (
                   <Text key={index} style={styles.description}>
                     {schedule.dayLabel} - {schedule.startAt}-{schedule.endAt}

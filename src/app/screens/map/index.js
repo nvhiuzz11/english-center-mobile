@@ -56,6 +56,7 @@ export const MapScreen = props => {
   const styles = makeStyle(colors);
 
   const isLogin = useSelector(state => state.app.isLogin);
+
   const {accountInfo} = useSelector(state => state.account);
 
   const {publicAxios} = useAuxios();
@@ -364,5 +365,6 @@ const makeStyle = colors =>
       padding: 10,
       borderRadius: 5,
       elevation: 5,
+      color: '#555',
     },
   });

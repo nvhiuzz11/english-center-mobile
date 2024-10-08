@@ -110,8 +110,8 @@ const makeStyle = colors =>
       alignItems: 'center',
     },
     rightItemContainer: {
-      marginLeft: 20,
-      flex: 2,
+      marginLeft: 10,
+
       alignItems: 'flex-start',
       justifyContent: 'center',
     },

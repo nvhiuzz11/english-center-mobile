@@ -145,7 +145,7 @@ export const ChildScreen = props => {
         type: 'error',
         props: {
           title: translate(
-            'The request already exists or the parent id is wrong',
+            'The request already exists or the student id is wrong',
           ),
         },
       });

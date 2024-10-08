@@ -5,6 +5,7 @@ LogBox.ignoreLogs([
   'Encountered two children with the same key', // First warning
   'Warning: componentWillReceiveProps has been renamed', // Another warning
   'VirtualizedLists should never be nested', // Another example warning
+  'ViewPropTypes will be removed from React Native, along with all other PropTypes',
 ]);
 
 import {ApplicationProvider} from '@ui-kitten/components';

@@ -49,7 +49,7 @@ export const SessionContentDetailScreen = props => {
                 {translate('Student assessment')}:
               </Text>
               <Text style={styles.descrpition}>
-                {attendanceData?.generalReview?.specificContent}
+                {attendanceData?.specificReview?.specificContent}
               </Text>
             </>
           ) : (

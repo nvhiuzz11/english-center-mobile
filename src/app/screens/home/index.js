@@ -90,6 +90,12 @@ export const HomeScreen = props => {
   }, []);
 
   useEffect(() => {
+    if (filteredClasses) {
+      console.log('filteredClasses', filteredClasses);
+    }
+  }, [filteredClasses]);
+
+  useEffect(() => {
     if (isFocused) {
       fetchClasses();
     }
@@ -171,7 +177,7 @@ export const HomeScreen = props => {
           if (isDiscountChecked) {
             matcDiscount = item.program !== null;
           } else {
-            matcDiscount = item.program === null;
+            matcDiscount = true;
           }
 
           let matchCenter = true;
