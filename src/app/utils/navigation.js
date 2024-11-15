@@ -10,7 +10,7 @@ import {createNativeStackNavigator} from '@react-navigation/native-stack';
 import {useTheme} from '@ui-kitten/components';
 import React from 'react';
 import {useSafeAreaInsets} from 'react-native-safe-area-context';
-import {useSelector} from 'react-redux';
+import {useDispatch, useSelector} from 'react-redux';
 import {isParent, isStudent, isTeacher} from './user';
 
 export const Stack = createNativeStackNavigator();

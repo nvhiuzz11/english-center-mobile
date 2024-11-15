@@ -111,9 +111,9 @@ const makeStyle = colors =>
     },
     rightItemContainer: {
       marginLeft: 10,
-
       alignItems: 'flex-start',
       justifyContent: 'center',
+      flex: 1,
     },
     image: {
       height: 120,

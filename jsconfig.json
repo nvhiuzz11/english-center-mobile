@@ -16,6 +16,7 @@
       "@constants/*": ["./src/app/constants/*"],
       "@locales": ["./src/app/locales/index.js"],
       "@configs/*": ["./src/app/configs/*"],
+      "@service/*": ["./src/app/service/*"],
       "@src/*": ["./src/*"]
     }
   },

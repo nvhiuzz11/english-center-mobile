@@ -33,9 +33,9 @@ export const useAuth = () => {
   };
 
   const logout = async () => {
+    dispatch(setIsLogin({isLogin: false}));
     dispatch(setAccountInfo({accountInfo: null}));
     dispatch(setAuthState({accessToken: null, refreshToken: null}));
-    dispatch(setIsLogin({isLogin: false}));
   };
 
   return {

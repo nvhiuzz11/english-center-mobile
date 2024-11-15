@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "517452750917",
+    "project_id": "english-center-1e883",
+    "storage_bucket": "english-center-1e883.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:517452750917:android:898f80e3af705f8298832c",
+        "android_client_info": {
+          "package_name": "com.englishcenter"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCw6stXxr-DpUFdJp64OBTpLYKOHpkud6k"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

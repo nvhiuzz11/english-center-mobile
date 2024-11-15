@@ -33,7 +33,7 @@ export const ModalListRequest = props => {
             </View>
             <View style={styles.row}>
               <Text style={styles.title}>{translate('Name')}: </Text>
-              <Text style={styles.info}>{item.studentId}</Text>
+              <Text style={styles.info}>{item.requestUser?.name}</Text>
             </View>
           </View>
           {/* <Text style={styles.info}>
@@ -55,7 +55,7 @@ export const ModalListRequest = props => {
             </View>
             <View style={styles.row}>
               <Text style={styles.title}>{translate('Name')}: </Text>
-              <Text style={styles.info}>{item.requestUser?.name}</Text>
+              <Text style={styles.info}>{item.requestByStudent?.name}</Text>
             </View>
           </View>
         </View>

@@ -45,7 +45,7 @@ export const DetailStudentClassScreen = props => {
 
   const {publicAxios, authAxios} = useAuxios();
 
-  const [isLoading, setIsLoading] = useState(true);
+  const [isLoading, setIsLoading] = useState(false);
   const [classInfo, setClassInfo] = useState(null);
   const [reviews, setReviews] = useState(null);
   const [listAttendance, setListAttendance] = useState(null);

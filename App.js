@@ -25,6 +25,7 @@ import {
   SuccessToast,
   WarningToast,
 } from '@components/toast';
+import messaging from '@react-native-firebase/messaging';
 
 const toastConfig = {
   success: ({props}) => <SuccessToast {...props} />,
@@ -34,6 +35,22 @@ const toastConfig = {
 };
 
 setI18nConfig();
+
+const handleNotification = async remoteMessage => {
+  console.log('Message handled !', remoteMessage);
+  const {title, body} = remoteMessage.notification;
+  Toast.show({
+    type: 'info',
+    props: {
+      title: title,
+      subTitle: body,
+    },
+  });
+};
+
+messaging().setBackgroundMessageHandler(handleNotification);
+messaging().onMessage(handleNotification);
+
 const App = () => {
   return (
     <SafeAreaProvider>

@@ -3,6 +3,7 @@ import {createSlice, PayloadAction} from '@reduxjs/toolkit';
 const initialState = {
   isLogin: false,
   listSaveAccount: [],
+  fcmToken: null,
 };
 
 export const appState = createSlice({
@@ -36,6 +37,9 @@ export const appState = createSlice({
         (account: any) => account.id !== action.payload.id,
       );
     },
+    setFcmToken: (state, action: PayloadAction<{fcmToken: String}>) => {
+      state.fcmToken = action.payload.fcmToken;
+    },
   },
 });
 
@@ -44,5 +48,6 @@ export const {
   addSaveAccount,
   updateSaveAccount,
   deleteSaveAccount,
+  setFcmToken,
 } = appState.actions;
 export default appState.reducer;

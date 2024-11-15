@@ -16,6 +16,7 @@ module.exports = {
           '@assets': './src/app/assets',
           '@utils': './src/app/utils',
           '@navigation': './src/navigation',
+          '@service': './src/service',
           '@locales': './src/app/locales/index.js',
         },
         extensions: ['.ios.js', '.android.js', '.js', '.ts', '.tsx', '.json'],

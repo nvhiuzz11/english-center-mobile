@@ -13,6 +13,7 @@ import {translate} from '@locales';
 import {useNavigation, useTheme} from '@react-navigation/native';
 import {useAuth, useAuxios} from '@src/app/hook';
 import {setAccountInfo} from '@store/reducers/account';
+import {setIsSubscribedNotification} from '@store/reducers/setting';
 import {CheckBox, Icon} from '@ui-kitten/components';
 import {isOnlyWhitespace} from '@utils/input';
 import {hp, wp} from '@utils/responsive';
@@ -30,6 +31,7 @@ import FastImage from 'react-native-fast-image';
 import {KeyboardAwareScrollView} from 'react-native-keyboard-aware-scroll-view';
 import Toast from 'react-native-toast-message';
 import {useDispatch, useSelector} from 'react-redux';
+import messaging from '@react-native-firebase/messaging';
 
 export const LoginScreen = props => {
   const payload = props?.route?.params?.payload;
@@ -39,8 +41,9 @@ export const LoginScreen = props => {
   const navigation = useNavigation();
   const styles = makeStyle(colors);
 
-  const language = useSelector(state => state?.settings?.language);
-  const themeMode = useSelector(state => state.settings.themeMode);
+  const {isSubscribedNotification, themeMode, language} = useSelector(
+    state => state.settings,
+  );
   const account = useSelector(state => state.account);
 
   const {publicAxios, authAxios} = useAuxios();
@@ -76,6 +79,20 @@ export const LoginScreen = props => {
     navigation.navigate(SCREEN_NAME.SELECT_ROLE);
   };
 
+  const subscribeNotification = async () => {
+    const token = await messaging().getToken();
+    try {
+      const res = await authAxios.post('/api/update-user-message-token', {
+        messageToken: token,
+      });
+      if (res.status === StatusCodes.OK) {
+        console.log('subscribeNotification: success');
+      }
+    } catch (error) {
+      console.log('subscribeNotification ~ error', error);
+    }
+  };
+
   const getAccountInfo = async () => {
     console.log('account', account);
 
@@ -86,6 +103,9 @@ export const LoginScreen = props => {
 
         console.log('res data', res.data);
         saveAccountInfo({...res.data, password: password});
+        if (isSubscribedNotification) {
+          await subscribeNotification();
+        }
       }
     } catch (error) {
       console.log('getAccountInfo ~ error', error);

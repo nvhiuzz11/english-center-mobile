@@ -3,7 +3,7 @@ import {Container} from '@components/container';
 import {LIST_SETTINGS, SCREEN_NAME} from '@constants/navigation';
 import {changeLanguage, translate} from '@locales';
 import {useNavigation, useTheme} from '@react-navigation/native';
-import {setAccountInfo} from '@store/reducers/account';
+import {setAccountInfo, setAuthState} from '@store/reducers/account';
 import {
   setIsSubscribedNotification,
   setThemeMode,
@@ -24,14 +24,18 @@ import {MainHeader} from '@components/mainHeader';
 import {hp, wp} from '@utils/responsive';
 import {ENFlag} from '@assets/svg/enFlag';
 import {VNFlag} from '@assets/svg/vnFlag';
-import {useAuth} from '@src/app/hook';
+import {useAuth, useAuxios} from '@src/app/hook';
 import {Loading} from '@components/loading';
+import messaging from '@react-native-firebase/messaging';
+import {StatusCodes} from 'http-status-codes';
+import {setIsLogin} from '@store/reducers/app';
 
 export const SettingScreen = props => {
   const navigation = useNavigation();
   const dispatch = useDispatch();
   const {colors} = useTheme();
   const styles = makeStyle(colors);
+  const {publicAxios, authAxios} = useAuxios();
 
   // const themeMode = useSelector(state => state.settings.themeMode);
   // console.log('themeMode', themeMode);
@@ -42,18 +46,56 @@ export const SettingScreen = props => {
   // console.log('l ', LIST_SETTINGS);
 
   const {logout} = useAuth();
+
   const [isLoading, setIsLoading] = useState(false);
 
   const {isSubscribedNotification, themeMode, language} = useSelector(
     state => state.settings,
   );
 
+  const subscribeNotification = async () => {
+    dispatch(setIsSubscribedNotification({isSubscribedNotification: true}));
+
+    const token = await messaging().getToken();
+    try {
+      const res = await authAxios.post('/api/update-user-message-token', {
+        messageToken: token,
+      });
+      if (res.status === StatusCodes.OK) {
+        console.log('subscribeNotification: success');
+      }
+    } catch (error) {
+      console.log('subscribeNotification ~ error', error);
+    }
+  };
+
+  const unSubscribeNotification = async () => {
+    try {
+      const res = await authAxios.post('/api/remove-user-message-token');
+      if (res.status === StatusCodes.OK) {
+        console.log('unSubscribeNotification: success');
+      }
+    } catch (error) {
+      console.log('unSubscribeNotification ~ error', error);
+    }
+  };
+
   const onChangeEnableNotification = async () => {
-    dispatch(
-      setIsSubscribedNotification({
-        isSubscribedNotification: !isSubscribedNotification,
-      }),
-    );
+    const token = await messaging().getToken();
+    console.log('token', token);
+
+    // dispatch(
+    //   setIsSubscribedNotification({
+    //     isSubscribedNotification: !isSubscribedNotification,
+    //   }),
+    // );
+
+    if (!isSubscribedNotification) {
+      await subscribeNotification();
+    } else {
+      dispatch(setIsSubscribedNotification({isSubscribedNotification: false}));
+      await unSubscribeNotification();
+    }
   };
 
   const onEnableDarkMode = async () => {
@@ -65,6 +107,7 @@ export const SettingScreen = props => {
   const onPressChangeAccount = () => {};
   const onPressLogout = async () => {
     setIsLoading(true);
+    await unSubscribeNotification();
     await logout();
     setIsLoading(false);
   };
